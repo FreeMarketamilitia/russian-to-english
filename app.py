@@ -140,7 +140,7 @@ def translate_text(text, api_key):
     model = genai.GenerativeModel('gemini-1.5-flash')
     prompt = (
         "You are an expert translator specializing in Soviet-era documents. Translate the following text from Russian to English. "
-        "The text is likely from a classified KGB document, possibly a diplomatic note or internal memo, dated around May 1984. "
+        "The text is likely from a classified KGB document, possibly a diplomatic note or internal memo. "
         "It may contain heavily stylized formatting, unclear handwriting, or partial illegibility due to age or scanning artifacts. "
         "Your task is to: "
         "1. Provide an accurate, natural English translation where the text is clear, preserving the original tone (formal, authoritative) and intent. "
