@@ -1,7 +1,16 @@
 import sys
 import os
+import subprocess
 import textract
 import google.generativeai as genai
+
+def check_tesseract_installed():
+    """Check if Tesseract is installed on the system."""
+    try:
+        subprocess.run(['tesseract', '--version'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
+        return True
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        return False
 
 def split_into_chunks(text, max_length=4000):
     """Split text into chunks of max_length characters, preserving paragraphs."""
@@ -71,11 +80,21 @@ def main():
         print('Error: Only PDF and DOC files are supported.')
         sys.exit(1)
 
+    # Check for Tesseract if PDF (for scanned PDFs)
+    if extension == '.pdf' and not check_tesseract_installed():
+        print('Warning: Tesseract OCR is not installed. Scanned PDFs may not be processed correctly.')
+        print('Install Tesseract with Russian support (e.g., "sudo apt-get install tesseract-ocr tesseract-ocr-rus").')
+
     # Extract text from the file
     try:
-        text = textract.process(file_path).decode('utf-8')
+        # Use Russian language for OCR if PDF
+        if extension == '.pdf':
+            text = textract.process(file_path, language='rus').decode('utf-8')
+        else:
+            text = textract.process(file_path).decode('utf-8')
     except Exception as e:
         print(f'Error extracting text: {e}')
+        print('If this is a scanned PDF, ensure Tesseract is installed with Russian support.')
         sys.exit(1)
 
     # Get API key from environment variable
