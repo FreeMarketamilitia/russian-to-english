@@ -1,66 +1,121 @@
-# Russian to English PDF/DOC Translator
+# Russian-to-English PDF Translator
 
-This Python script extracts text from PDF or DOC files, including scanned PDFs, and translates it from Russian to English using the Google Gemini API. It supports multi-page documents (e.g., 20+ pages) by splitting text into manageable chunks.
+This Python script translates Russian text from PDF, DOC, JPEG, or JPG files into English using OCR (Tesseract) and the Google Gemini API. It’s designed for Soviet-era documents, handling stylized or illegible text with tentative interpretations. Features include high-DPI PDF-to-JPEG conversion, a rich-text interactive menu, and automatic dependency installation.
 
 ## Prerequisites
 
-### Software Requirements
-- Python 3.7+
-- Operating system: Linux, macOS, or Windows (with additional setup for DOC files and OCR)
+- Python 3.8+: Ensure Python is installed (python3 --version).
+- Operating System: Tested on Linux (Ubuntu), macOS, and Windows (some manual steps may vary).
+- Internet: Required for installing dependencies and using the Gemini API.
+- Google API Key: Needed for translation (see Step 3).
 
-### Python Libraries
-Install the required libraries:
-pip install google-generativeai textract
+## Step-by-Step Instructions
 
-### Additional Dependencies
-- For DOC files: Install `antiword`:
-  - Ubuntu: sudo apt-get install antiword
-  - macOS: brew install antiword (with Homebrew)
-  - Windows: Use WSL or switch to `.docx` with a different library (e.g., `python-docx`).
-- For scanned PDFs (OCR): Install Tesseract:
-  - Ubuntu: sudo apt-get install tesseract-ocr tesseract-ocr-rus
-  - macOS: brew install tesseract tesseract-lang
-  - Windows: Download and install from https://github.com/UB-Mannheim/tesseract/wiki, then add to PATH
-  - Then: pip install textract[ocr]
-- Note: The `tesseract-ocr-rus` package adds Russian language support for better OCR accuracy.
+### Step 1: Clone or Set Up the Project
+1. Navigate to your project directory:
+   cd ~/Projects/russian-to-english
+2. If using Git (optional):
+   - Clone the repository or place app.py in this directory.
+   - Example:
+     git clone <repository-url>
+     cd russian-to-english
 
-### API Key
-1. Obtain a Gemini API key from [Google AI Studio](https://makersuite.google.com/).
-2. Set it as an environment variable:
-export GOOGLE_API_KEY='your-api-key-here'
+### Step 2: Set Up a Virtual Environment
+1. Create a virtual environment:
+   python3 -m venv venv
+2. Activate the virtual environment:
+   - Linux/macOS:
+     source venv/bin/activate
+   - Windows:
+     venv\Scripts\activate
+3. Verify: You should see (venv) in your terminal prompt.
 
-## Usage
+### Step 3: Configure the Google API Key
+1. Obtain a Google API Key:
+   - Go to https://console.cloud.google.com/.
+   - Create a project, enable the Gemini API, and generate an API key.
+2. Set the environment variable:
+   - Linux/macOS:
+     export GOOGLE_API_KEY='your-api-key-here'
+   - Windows:
+     set GOOGLE_API_KEY=your-api-key-here
+   - Alternatively, add it to your shell profile (e.g., ~/.bashrc) for persistence:
+     echo "export GOOGLE_API_KEY='your-api-key-here'" >> ~/.bashrc
+     source ~/.bashrc
 
-1. Save the script as `translate.py`.
-2. Run it with a file path as an argument:
-python translate.py path/to/your/file.pdf
-   or
-python translate.py path/to/your/file.doc
+### Step 4: Install System Dependencies
+The script attempts to install Tesseract automatically, but it may require manual intervention due to permissions.
 
-3. The translated text will be saved as `path/to/your/file_translated.txt`.
+1. Tesseract OCR:
+   - Linux (Ubuntu):
+     sudo apt-get update
+     sudo apt-get install -y tesseract-ocr tesseract-ocr-rus
+   - macOS (with Homebrew):
+     brew install tesseract --with-all-languages
+     (Install Homebrew first if needed: /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)")
+   - Windows:
+     - Download and install from https://github.com/UB-Mannheim/tesseract/wiki.
+     - Add Tesseract to your system PATH (e.g., C:\Program Files\Tesseract-OCR).
 
-## Features
-- Handles PDF (including scanned) and DOC files.
-- Supports large documents (20+ pages) by splitting text into chunks.
-- Uses the official Google Gemini API (`gemini-1.5-flash` model).
-- OCR support for scanned PDFs via Tesseract.
+2. Verify Tesseract:
+   tesseract --version
+   If this fails, ensure the installation completed and the binary is in your PATH.
 
-## Notes
-- Chunk Size: Text is split into ~4000-character chunks to stay within API limits.
-- API Quotas: Ensure your API key supports multiple requests for large files.
-- Scanned PDFs: Requires Tesseract with Russian language support for accurate text extraction.
-- Output Quality: The prompt is optimized for accurate translations, retaining context where possible.
+### Step 5: Run the Script
+1. Ensure you’re in the virtual environment:
+   source venv/bin/activate  # Linux/macOS
+   # or
+   venv\Scripts\activate     # Windows
+2. Run with interactive menu:
+   python3 app.py
+
+   | Display Item                  | Details                                                                 |
+   |-------------------------------|-------------------------------------------------------------------------|
+   | RAM Detection                 | Detected system RAM: X.XX GB                                            |
+   | Welcome Message               | ╭─────────────── Welcome to the Soviet Document Translator ───────────────╮ |
+   |                               | │                                                                         │ |
+   |                               | ╰─────────────────────────────────────────────────────────────────────────╯ |
+   | Prompt                        | [yellow]Please choose an option:[/yellow]                               |
+
+   | Action                        | Description                                                             |
+   |-------------------------------|-------------------------------------------------------------------------|
+   | Option 1: Translate a single file | Enter a file path (e.g., my_doc.pdf) to process a specific file.       |
+   | Option 2: Translate all PDFs  | Process all PDFs in the current directory automatically.                |
+   | DPI Prompt                    | Enter a DPI value (suggested based on RAM: 200 for <4 GB, 300 for 4-8 GB, 600 for >8 GB). |
+
+3. Run with a specific file:
+   python3 app.py path/to/your_file.pdf
+   - Uses the RAM-suggested DPI automatically.
+
+### Step 6: Review Output
+- Translated files are saved in a Translated subdirectory (e.g., Translated/your_file_translated.txt).
+- Check console output for progress (e.g., OCR snippets, errors).
 
 ## Troubleshooting
-- "GOOGLE_API_KEY not set": Ensure the environment variable is set.
-- Text extraction fails: Verify file format and dependencies (e.g., `antiword` for DOC, Tesseract for scanned PDFs).
-- Poor OCR results: Ensure Tesseract is installed with Russian support (`tesseract-ocr-rus`).
-- Translation errors: Check API key validity and quotas.
 
-## Example
-export GOOGLE_API_KEY='abc123'
-python translate.py documents/scanned_report.pdf
-Output: `documents/scanned_report_translated.txt`
+- “GOOGLE_API_KEY not set”:
+  - Ensure you set the environment variable (Step 3).
+- “Tesseract not found”:
+  - Install manually (Step 4) and verify with tesseract --version.
+- Slow Conversion:
+  - Lower the DPI when prompted (e.g., 300 instead of 600) if RAM is limited.
+- OCR Fails (e.g., “1680” repeated):
+  - Check the PDF for legibility; adjust DPI or preprocessing in preprocess_image if needed.
 
-## License
-MIT License - feel free to modify and distribute.
+## Features
+- File Support: PDF, DOC, JPEG, JPG.
+- High-DPI Conversion: Uses PyMuPDF for fast, high-quality PDF-to-JPEG conversion (up to 600 DPI).
+- OCR: Tesseract with Russian language support.
+- Translation: Google Gemini API with context-aware prompts for Soviet documents.
+- Interactive Menu: Rich-text interface with DPI selection.
+- RAM Detection: Suggests DPI based on system memory.
+
+## Dependencies
+- Python Libraries: Installed automatically (PyMuPDF, opencv-python, pillow, textract, google-generativeai, rich, psutil).
+- System: Tesseract OCR (manual install may be required).
+
+## Notes
+- Performance: High DPI (e.g., 600) requires more RAM and time but improves OCR accuracy. Adjust based on your system.
+- Security: Keep your Google API key private; avoid committing it to version control.
+
+For issues or enhancements, feel free to modify app.py or raise a request!
