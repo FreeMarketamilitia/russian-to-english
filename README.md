@@ -32,7 +32,7 @@ This Python script translates Russian text from PDF, DOC, JPEG, or JPG files int
 
 ### Step 3: Configure the Google API Key
 1. Obtain a Google API Key:
-   - Go to https://console.cloud.google.com/.
+   - Go to [https://aistudio.google.com/apikey](https://aistudio.google.com/apikey).
    - Create a project, enable the Gemini API, and generate an API key.
 2. Set the environment variable:
    - Linux/macOS:
